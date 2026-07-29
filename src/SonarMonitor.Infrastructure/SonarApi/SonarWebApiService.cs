@@ -44,7 +44,7 @@ public class SonarWebApiService : ISonarWebApiService
             return null;
         }
 
-        var text = await result.Content.ReadAsStringAsync();
+        var text = await result.Content.ReadAsStringAsync(cancellationToken);
         var sonarReponse = JsonSerializer.Deserialize<SonarResponse>(text);
 
         return CreateSonarMeasures(sonarReponse);
