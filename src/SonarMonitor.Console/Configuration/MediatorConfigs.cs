@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SonarMonitor.UseCases.Quotes.List;
+using SonarMonitor.UseCases.SonarQube.Get;
 
 namespace SonarMonitor.Console.Configuration;
 
@@ -13,7 +13,7 @@ public static class MediatorConfigs
 
             options.Assemblies =
             [
-                typeof(ListQuotesQuery)
+                typeof(GetSonarMeasuresQuery)
             ];
         });
 

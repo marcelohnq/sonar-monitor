@@ -42,7 +42,7 @@ public static partial class Program
         builder.Services.AddHttpClient();
         builder.Services.AddServicesConfigs(builder);
         builder.Services.AddMediatorSourceGen();
-        builder.Services.AddInfrastructureServices(builder.Configuration, logger);
+        builder.Services.AddInfrastructureServices(logger);
 
         return builder;
     }
