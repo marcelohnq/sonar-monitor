@@ -5,7 +5,9 @@ using SonarMonitor.UseCases.SonarQube.Get;
 
 namespace SonarMonitor.Console.Command;
 
-public class CommandRequest(IMediator _mediator, ILogger<CommandRequest> _logger)
+public class CommandRequest(
+    IMediator _mediator,
+    ILogger<CommandRequest> _logger)
 {
     private const string PrintFormat = "Violacoes: {Violations} | Cobertura: {Coverage} | Ultima: {LastCommit}";
 
@@ -13,12 +15,17 @@ public class CommandRequest(IMediator _mediator, ILogger<CommandRequest> _logger
     {
         switch (args[0])
         {
-            case "-u":
+            case "-s": // Single
                 if (args.Length > 1)
                 {
                     var measures = await _mediator.Send(new GetSonarMeasuresQuery(args[1], args[2]));
                     PrintMeasures(args[2], measures);
                 }
+                break;
+            case "-r": // Report
+                var htmlReport = await _mediator.Send(new GetSonarMeasuresQuery(args[1], args[2]));
+                break;
+            case "-m": // Mail
                 break;
         }
     }

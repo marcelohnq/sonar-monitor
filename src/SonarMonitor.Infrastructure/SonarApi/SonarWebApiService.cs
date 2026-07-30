@@ -1,8 +1,8 @@
-﻿using Ardalis.GuardClauses;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using SonarMonitor.UseCases.Common;
+using SonarMonitor.UseCases.Interfaces;
 using SonarMonitor.UseCases.SonarQube;
-using SonarMonitor.UseCases.SonarQube.Get;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -10,7 +10,7 @@ namespace SonarMonitor.Infrastructure.SonarApi;
 
 public class SonarWebApiService(
     IHttpClientFactory _httpClientFactory,
-    IConfiguration _configuration,
+    IOptions<SonarServersOptions> _options,
     ILogger<SonarWebApiService> _logger) : ISonarWebApiService
 {
     private const string keyViolations = "violations";
@@ -41,14 +41,15 @@ public class SonarWebApiService(
 
     private HttpClient CreateSonarHttpClient(string versionSonar)
     {
-        var url = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:url"]);
-        var auth = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:auth"]);
-        var token = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:token"]);
+        if (!_options.Value.Servers.TryGetValue(versionSonar, out var sonarConfig))
+        {
+            throw new InvalidOperationException("Configurar o Servidor do SonarQube.");
+        }
 
         var httpClient = _httpClientFactory.CreateClient();
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(auth, token);
-        httpClient.BaseAddress = new Uri(url);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(sonarConfig.Auth, sonarConfig.Token);
+        httpClient.BaseAddress = new Uri(sonarConfig.Url);
 
         return httpClient;
     }

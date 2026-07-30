@@ -1,4 +1,5 @@
 ﻿using Mediator;
+using SonarMonitor.UseCases.Interfaces;
 
 namespace SonarMonitor.UseCases.SonarQube.Get;
 

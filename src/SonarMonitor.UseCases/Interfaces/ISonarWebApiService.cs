@@ -1,4 +1,6 @@
-﻿namespace SonarMonitor.UseCases.SonarQube.Get;
+﻿using SonarMonitor.UseCases.SonarQube;
+
+namespace SonarMonitor.UseCases.Interfaces;
 
 public interface ISonarWebApiService
 {
