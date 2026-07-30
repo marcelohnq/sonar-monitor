@@ -28,8 +28,8 @@ public class CommandRequest(IMediator _mediator, IConsole _console)
                     break;
 
                 case "-r": // Report
-                    var reports = await _mediator.Send(new ReportMeasuresQuery());
-                    _console.TableReports(reports);
+                    var reportEnvironments = await _mediator.Send(new ReportMeasuresQuery());
+                    _console.ReportEnvironments(reportEnvironments);
                     break;
 
                 case "-m": // Mail

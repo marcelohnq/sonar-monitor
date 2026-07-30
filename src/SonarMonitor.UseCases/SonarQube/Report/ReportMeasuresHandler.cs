@@ -8,14 +8,14 @@ namespace SonarMonitor.UseCases.SonarQube.Report;
 public class ReportMeasuresHandler(
     ISonarWebApiService _sonarWebApiService,
     IOptions<SonarQubeOptions> _options,
-    IConsole _console) : IRequestHandler<ReportMeasuresQuery, IEnumerable<ReportMeasureDto>>
+    IConsole _console) : IRequestHandler<ReportMeasuresQuery, ReportEnvironmentDto>
 {
-    public async ValueTask<IEnumerable<ReportMeasureDto>> Handle(ReportMeasuresQuery request, CancellationToken cancellationToken)
+    public async ValueTask<ReportEnvironmentDto> Handle(ReportMeasuresQuery request, CancellationToken cancellationToken)
     {
         var measuresDevelopments = await GetMeasures(_options.Value.Developments, cancellationToken);
         var measuresReleases = await GetMeasures(_options.Value.Releases, cancellationToken);
 
-        return [.. measuresDevelopments, .. measuresReleases];
+        return new(measuresDevelopments, measuresReleases);
     }
 
     private async Task<IEnumerable<ReportMeasureDto>> GetMeasures(Dictionary<string, SonarProjectConfig> projects, CancellationToken cancellationToken)

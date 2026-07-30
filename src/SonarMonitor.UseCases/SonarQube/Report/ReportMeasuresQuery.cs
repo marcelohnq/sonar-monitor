@@ -2,4 +2,4 @@
 
 namespace SonarMonitor.UseCases.SonarQube.Report;
 
-public record ReportMeasuresQuery() : IRequest<IEnumerable<ReportMeasureDto>>;
+public record ReportMeasuresQuery() : IRequest<ReportEnvironmentDto>;

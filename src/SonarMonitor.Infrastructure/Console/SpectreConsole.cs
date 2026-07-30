@@ -31,8 +31,9 @@ public class SpectreConsole : IConsole
 
     public void TableReports(IEnumerable<ReportMeasureDto> reports)
     {
-        var table = new Table();
-        table.Border(TableBorder.Rounded);
+        var table = new Table()
+            .HeavyEdgeBorder()
+            .ShowRowSeparators();
 
         table.AddColumn("Projeto");
         table.AddColumn("Violações");
@@ -49,5 +50,14 @@ public class SpectreConsole : IConsole
         }
         
         AnsiConsole.Write(table);
+    }
+
+    public void ReportEnvironments(ReportEnvironmentDto report)
+    {
+        AnsiConsole.MarkupLine($"[#FF8700]Desenvolvimentos[/]");
+        TableReports(report.Developments);
+
+        AnsiConsole.MarkupLine($"[#0087FF]Releases[/]");
+        TableReports(report.Developments);
     }
 }
