@@ -1,12 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Ardalis.GuardClauses;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SonarMonitor.UseCases.SonarQube;
 using SonarMonitor.UseCases.SonarQube.Get;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace SonarMonitor.Infrastructure.SonarApi;
 
-public class SonarWebApiService : ISonarWebApiService
+public class SonarWebApiService(
+    IHttpClientFactory _httpClientFactory,
+    IConfiguration _configuration,
+    ILogger<SonarWebApiService> _logger) : ISonarWebApiService
 {
     private const string keyViolations = "violations";
     private const string keyCoverage = "coverage";
@@ -16,27 +21,11 @@ public class SonarWebApiService : ISonarWebApiService
     private const string ParamMetricKeys = "metricKeys";
     private const string ParamComponent = "component";
 
-    private readonly HttpClient _client;
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<SonarWebApiService> _logger;
-
-    public SonarWebApiService(
-        IHttpClientFactory httpClientFactory,
-        IConfiguration configuration,
-        ILogger<SonarWebApiService> logger)
-    {
-        _client = httpClientFactory.CreateClient();
-        _configuration = configuration;
-        _logger = logger;
-
-        _client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
-    }
-
     public async Task<SonarMeasuresDto?> GetMeasuresAsync(string versionSonar, string projectKey, CancellationToken cancellationToken)
     {
-        var sonarUrl = SonarUrlFormat(versionSonar, projectKey);
-
-        var result = await _client.GetAsync(sonarUrl, cancellationToken);
+        var client = CreateSonarHttpClient(versionSonar);
+        var sonarUrl = SonarUrlFormat(projectKey);
+        var result = await client.GetAsync(sonarUrl, cancellationToken);
 
         if (!result.IsSuccessStatusCode)
         {
@@ -50,12 +39,22 @@ public class SonarWebApiService : ISonarWebApiService
         return CreateSonarMeasures(sonarReponse);
     }
 
-    private string SonarUrlFormat(string versionSonar, string projectKey)
+    private HttpClient CreateSonarHttpClient(string versionSonar)
     {
-        var sonarUrl = _configuration[$"SonarQube:Urls:{versionSonar}"];
+        var url = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:url"]);
+        var auth = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:auth"]);
+        var token = Guard.Against.NullOrWhiteSpace(_configuration[$"SonarServers:{versionSonar}:token"]);
 
-        return $"{sonarUrl}/{ApiMeasuresEndpoint}?{ParamMetricKeys}={string.Join(",", keyViolations, keyCoverage, keyLastCommitDate)}&{ParamComponent}={projectKey}";
+        var httpClient = _httpClientFactory.CreateClient();
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(auth, token);
+        httpClient.BaseAddress = new Uri(url);
+
+        return httpClient;
     }
+
+    private static string SonarUrlFormat(string projectKey) =>
+        $"{ApiMeasuresEndpoint}?{ParamMetricKeys}={string.Join(",", keyViolations, keyCoverage, keyLastCommitDate)}&{ParamComponent}={projectKey}";
 
     private static SonarMeasuresDto? CreateSonarMeasures(SonarResponse? response)
     {
