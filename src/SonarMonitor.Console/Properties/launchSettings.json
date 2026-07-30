@@ -2,7 +2,7 @@
   "profiles": {
     "SonarMonitor.Console": {
       "commandName": "Project",
-      "commandLineArgs": "",
+      "commandLineArgs": "-r",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

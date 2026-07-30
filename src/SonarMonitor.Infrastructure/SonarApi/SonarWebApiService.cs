@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using SonarMonitor.UseCases.Common;
 using SonarMonitor.UseCases.Interfaces;
 using SonarMonitor.UseCases.SonarQube;
@@ -12,7 +11,7 @@ namespace SonarMonitor.Infrastructure.SonarApi;
 public class SonarWebApiService(
     IHttpClientFactory _httpClientFactory,
     IOptions<SonarQubeOptions> _options,
-    ILogger<SonarWebApiService> _logger) : ISonarWebApiService
+    IConsole console) : ISonarWebApiService
 {
     private const string keyViolations = "violations";
     private const string keyCoverage = "coverage";
@@ -30,7 +29,7 @@ public class SonarWebApiService(
 
         if (!result.IsSuccessStatusCode)
         {
-            _logger.LogError("Não foi possível consultar o Sonar");
+            console.Warning("Não foi possível consultar o Sonar.");
             return null;
         }
 

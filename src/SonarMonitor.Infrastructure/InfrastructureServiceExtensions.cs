@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using SonarMonitor.Infrastructure.Console;
 using SonarMonitor.Infrastructure.SonarApi;
 using SonarMonitor.UseCases.Common;
 using SonarMonitor.UseCases.Interfaces;
@@ -9,8 +9,7 @@ namespace SonarMonitor.Infrastructure;
 public static class InfrastructureServiceExtensions
 {
     public static IServiceCollection AddInfrastructureServices(
-      this IServiceCollection services,
-      ILogger logger)
+      this IServiceCollection services)
     {
         services.AddOptions<SonarQubeOptions>()
             .BindConfiguration(SonarQubeOptions.SectionName)
@@ -18,8 +17,7 @@ public static class InfrastructureServiceExtensions
             .ValidateOnStart();
 
         services.AddScoped<ISonarWebApiService, SonarWebApiService>();
-
-        logger.LogInformation("Infrastructure - serviços registrados com sucesso");
+        services.AddSingleton<IConsole, SpectreConsole>();
 
         return services;
     }
