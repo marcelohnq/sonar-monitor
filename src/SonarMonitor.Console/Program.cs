@@ -19,7 +19,7 @@ using var scope = host.Services.CreateScope();
 var command = scope.ServiceProvider.GetRequiredService<CommandRequest>();
 await command.ExecuteCommand(args);
 
-await host.RunAsync();
+await host.StopAsync();
 
 public static partial class Program
 {
