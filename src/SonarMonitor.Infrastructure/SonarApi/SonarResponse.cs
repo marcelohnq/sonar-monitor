@@ -1,14 +1,16 @@
-﻿namespace SonarMonitor.Infrastructure.SonarApi;
+﻿using System.Text.Json.Serialization;
+
+namespace SonarMonitor.Infrastructure.SonarApi;
 
 internal sealed record SonarResponse(
-    ComponentData Component
+    [property: JsonPropertyName("component")] ComponentData Component
 );
 
 internal sealed record ComponentData(
-    Measure[] Measures
+    [property: JsonPropertyName("measures")] Measure[] Measures
 );
 
 internal sealed record Measure(
-    string Metric,
-    string Value
+    [property: JsonPropertyName("metric")] string Metric,
+    [property: JsonPropertyName("value")] string Value
 );

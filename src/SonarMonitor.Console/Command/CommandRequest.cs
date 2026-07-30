@@ -7,7 +7,7 @@ namespace SonarMonitor.Console.Command;
 
 public class CommandRequest(IMediator _mediator, ILogger<CommandRequest> _logger)
 {
-    private const string PrintFormat = "{LastCommit} - [{Key}] V: {Violations} | C: {Coverage}";
+    private const string PrintFormat = "Violacoes: {Violations} | Cobertura: {Coverage} | Ultima: {LastCommit}";
 
     public async Task ExecuteCommand(string[] args)
     {
@@ -25,6 +25,11 @@ public class CommandRequest(IMediator _mediator, ILogger<CommandRequest> _logger
 
     private void PrintMeasures(string key, SonarMeasuresDto? sonarMeasures)
     {
-        _logger.LogInformation(PrintFormat, sonarMeasures?.LastCommit, key, sonarMeasures?.Violations, sonarMeasures?.Coverage);
+        var violations = sonarMeasures?.Violations.ToString() ?? string.Empty;
+        var coverage = sonarMeasures?.Coverage.HasValue == true ? sonarMeasures.Coverage.Value.ToString("P") : string.Empty;
+        var lastCommit = sonarMeasures?.LastCommit.HasValue == true ? sonarMeasures?.LastCommit.Value.ToString("dd/MM/yyyy HH:mm:ss") : string.Empty;
+
+        _logger.LogInformation("Projeto {Projeto}", key);
+        _logger.LogInformation(PrintFormat, violations, coverage, lastCommit);
     }
 }
