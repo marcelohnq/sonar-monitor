@@ -23,6 +23,7 @@ public class CommandRequest(
                     PrintMeasures(args[2], measures);
                 }
                 break;
+
             case "-r": // Report
                 var reports = await _mediator.Send(new ReportMeasuresQuery());
 
@@ -31,6 +32,7 @@ public class CommandRequest(
                     PrintMeasures(report.Name, report.Measures);
                 }
                 break;
+
             case "-m": // Mail
                 break;
         }
@@ -39,7 +41,7 @@ public class CommandRequest(
     private void PrintMeasures(string key, SonarMeasuresDto? sonarMeasures)
     {
         var violations = sonarMeasures?.Violations.ToString() ?? string.Empty;
-        var coverage = sonarMeasures?.Coverage.HasValue == true ? sonarMeasures.Coverage.Value.ToString("P1") : string.Empty;
+        var coverage = sonarMeasures?.Coverage.HasValue == true ? sonarMeasures.Coverage.Value.ToString("0.00'%'") : string.Empty;
         var lastCommit = sonarMeasures?.LastCommit.HasValue == true ? sonarMeasures?.LastCommit.Value.ToString("dd/MM/yyyy HH:mm:ss") : string.Empty;
 
         _logger.LogInformation("Projeto {Projeto}", key);

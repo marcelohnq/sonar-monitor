@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using SonarMonitor.UseCases.Common;
 using SonarMonitor.UseCases.Interfaces;
 using SonarMonitor.UseCases.SonarQube;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -64,7 +65,7 @@ public class SonarWebApiService(
         var lastCommitString = response?.Component.Measures.FirstOrDefault(m => m.Metric == keyLastCommitDate)?.Value;
 
         _ = int.TryParse(violationsString, out var violations);
-        _ = double.TryParse(coverageString, out var coverage);
+        _ = double.TryParse(coverageString, CultureInfo.InvariantCulture, out var coverage);
 
         DateTimeOffset? dateTimeOffset = long.TryParse(lastCommitString, out var lastCommit)
             ? DateTimeOffset.FromUnixTimeMilliseconds(lastCommit)
