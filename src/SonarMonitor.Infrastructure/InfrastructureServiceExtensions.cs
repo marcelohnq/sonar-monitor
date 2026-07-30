@@ -12,12 +12,10 @@ public static class InfrastructureServiceExtensions
       this IServiceCollection services,
       ILogger logger)
     {
-        services.AddOptions<SonarServersOptions>()
-            .BindConfiguration(SonarServersOptions.SectionName)
+        services.AddOptions<SonarQubeOptions>()
+            .BindConfiguration(SonarQubeOptions.SectionName)
             .Validate(o => o.Servers.Count > 0, "Um servidor do SonarQube deve ser informado.")
             .ValidateOnStart();
-        services.AddOptions<SonarProjectsOptions>()
-            .BindConfiguration(SonarProjectsOptions.SectionName);
 
         services.AddScoped<ISonarWebApiService, SonarWebApiService>();
 

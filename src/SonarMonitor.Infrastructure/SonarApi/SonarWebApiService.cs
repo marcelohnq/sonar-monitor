@@ -10,7 +10,7 @@ namespace SonarMonitor.Infrastructure.SonarApi;
 
 public class SonarWebApiService(
     IHttpClientFactory _httpClientFactory,
-    IOptions<SonarServersOptions> _options,
+    IOptions<SonarQubeOptions> _options,
     ILogger<SonarWebApiService> _logger) : ISonarWebApiService
 {
     private const string keyViolations = "violations";
